@@ -8,18 +8,22 @@ export function createSimpleTemplate(
   language: Language,
 ): string {
   if (language === 'ts') {
-    return `import React from 'react';
+    return `import * as React from "react";
 
-export default function ${componentName}() {
+interface I${componentName}Props {}
+
+const ${componentName}: React.FC<I${componentName}Props> = () => {
   return <div>${componentName}</div>;
-}
+};
+export default ${componentName};
 `;
   }
 
-  return `import React from 'react';
+  return `import * as React from "react";
 
-export default function ${componentName}() {
+const ${componentName}: React.FC = () => {
   return <div>${componentName}</div>;
-}
+};
+export default ${componentName};
 `;
 }

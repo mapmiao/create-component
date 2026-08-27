@@ -27,19 +27,25 @@ export function createComplexComponentTemplate(
     componentName.charAt(0).toLowerCase() + componentName.slice(1);
 
   if (language === 'ts') {
-    return `import styles from './index.module.less';
+    return `import * as React from "react";
+import styles from "./index.module.less";
 
-export default function ${componentName}() {
+interface I${componentName}Props {}
+
+const ${componentName}: React.FC<I${componentName}Props> = () => {
   return <div className={styles.${camelCaseName}}>${componentName}</div>;
-}
+};
+export default ${componentName};
 `;
   }
 
-  return `import styles from './index.module.less';
+  return `import * as React from "react";
+import styles from "./index.module.less";
 
-export default function ${componentName}() {
+const ${componentName}: React.FC = () => {
   return <div className={styles.${camelCaseName}}>${componentName}</div>;
-}
+};
+export default ${componentName};
 `;
 }
 
