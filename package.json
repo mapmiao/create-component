@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "description": "A CLI tool for quickly creating React / Vue components with Less / SCSS styles",
   "bin": {
-    "cc": "./bin/cli.js"
+    "scx": "./bin/cli.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

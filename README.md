@@ -11,6 +11,9 @@
 - 🚀 TypeScript / JavaScript 均支持
 - ⚡ 全参数可非交互式（适合脚本）
 - 🧭 也可完全交互式引导（适合手动使用）
+- 🌳 创建结果以 `tree` 风格输出（`├── / └──`）
+- 🌐 提示信息自动国际化：根据系统语言输出中文 / 英文
+- 📌 参数缺失时给出友好、可用的提示与示例（而非冰冷英文报错）
 
 ## 安装
 
@@ -33,39 +36,39 @@ npm link
 ### 基础命令
 
 ```bash
-cc <target-directory> <component-name>
+scx <target-directory> <component-name>
 ```
 
 不传参数时会交互式引导选择：
 
 ```bash
-cc ./src/components Icon
+scx ./src/components Icon
 ```
 
 ### 命令行参数
 
 ```bash
 # 指定框架（默认 react）
-cc ./src/components Icon --framework react
-cc ./src/components Icon --framework vue
+scx ./src/components Icon --framework react
+scx ./src/components Icon --framework vue
 
 # 指定样式预处理语言（默认 react→less、vue→scss）
-cc ./src/components Icon --style less
-cc ./src/components Icon --style scss
-cc ./src/components Icon --style sass
+scx ./src/components Icon --style less
+scx ./src/components Icon --style scss
+scx ./src/components Icon --style sass
 
 # 使用 TypeScript / JavaScript
-cc ./src/components Icon --ts
-cc ./src/components Icon --js
+scx ./src/components Icon --ts
+scx ./src/components Icon --js
 
 # 指定组件类型
-cc ./src/components Icon --type simple
-cc ./src/components Icon --type styled
-cc ./src/components Icon --type complex
+scx ./src/components Icon --type simple
+scx ./src/components Icon --type styled
+scx ./src/components Icon --type complex
 
 # 全参数组合（非交互，适合脚本）
-cc ./src/components Button --framework vue --ts --style scss --type complex
-cc ./src/components UserCard --ts --type styled            # react + less
+scx ./src/components Button --framework vue --ts --style scss --type complex
+scx ./src/components UserCard --ts --type styled            # react + less
 ```
 
 ### 完整示例
@@ -73,7 +76,7 @@ cc ./src/components UserCard --ts --type styled            # react + less
 创建一个 Vue + TypeScript + SCSS 的复杂组件：
 
 ```bash
-cc ./src/components UserPanel --framework vue --ts --style scss --type complex
+scx ./src/components UserPanel --framework vue --ts --style scss --type complex
 ```
 
 生成：
@@ -92,7 +95,7 @@ UserPanel/
 创建一个 React + TS + Less 的复杂组件：
 
 ```bash
-cc ./src/components LoginForm --ts --type complex
+scx ./src/components LoginForm --ts --type complex
 ```
 
 生成：
@@ -144,7 +147,7 @@ LoginForm/
 npm install
 npm run dev            # tsx 直接运行（热开发）
 npm run build          # 编译到 dist/
-npm link               # 全局链接命令 cc
+npm link               # 全局链接命令 scx
 ```
 
 ## License

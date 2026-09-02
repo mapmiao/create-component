@@ -41,6 +41,38 @@ function writeFile(filePath: string, content: string): void {
   fs.writeFileSync(filePath, content, 'utf-8');
 }
 
+/**
+ * 通用冲突检查：不依赖框架/类型/语言，只要目标目录下可能存在同名产物即视为冲突。
+ * 这样可在交互选择之前就拦截，避免用户把选项都选完才被告知已存在。
+ *
+ * 一个组件名可能占用的形态（framework/type + language 任意组合）：
+ *   - 单个 SFC：{Name}.vue                    (vue + simple)
+ *   - 单个 React 组件文件：{Name}.tsx / {Name}.jsx  (react + simple)
+ *   - 组件目录：{Name}/                       （styled/complex，react/vue 均创建同名目录）
+ * 若命中其一即认为已存在同名组件，避免跨框架/类型冲突。
+ */
+export function findExistingConflict(
+  targetDirectory: string,
+  componentName: string,
+): string | null {
+  const basePath = path.resolve(targetDirectory);
+
+  // 目录形态（styled/complex 会创建同名目录）
+  const dirPath = path.join(basePath, componentName);
+  if (fs.existsSync(dirPath)) return dirPath;
+
+  // 单文件形态（simple）：vue / react(tsx,jsx)
+  for (const ext of ['vue', 'tsx', 'jsx']) {
+    const f = path.join(basePath, `${componentName}.${ext}`);
+    if (fs.existsSync(f)) return f;
+  }
+
+  return null;
+}
+
+/**
+ * 生成阶段的兜底精确检查：组件是否已存在于目标位置。
+ */
 function checkComponentExists(options: CreateComponentOptions): boolean {
   const basePath = path.resolve(options.targetDirectory);
 
@@ -202,16 +234,18 @@ function generateVueComplex(options: CreateComponentOptions): string[] {
 
 export function generateComponent(
   options: CreateComponentOptions,
+  locale: 'zh' | 'en' = 'zh',
 ): { success: boolean; files?: string[]; error?: string } {
   try {
     const basePath = path.resolve(options.targetDirectory);
     ensureDir(basePath);
 
     if (checkComponentExists(options)) {
-      return {
-        success: false,
-        error: `组件 "${options.componentName}" 已存在`,
-      };
+      const msg =
+        locale === 'zh'
+          ? `组件 "${options.componentName}" 已存在`
+          : `Component "${options.componentName}" already exists`;
+      return { success: false, error: msg };
     }
 
     let files: string[];
@@ -228,7 +262,13 @@ export function generateComponent(
             files = generateReactComplex(options);
             break;
           default:
-            return { success: false, error: `未知的组件类型: ${options.type}` };
+            return {
+              success: false,
+              error:
+                locale === 'zh'
+                  ? `未知的组件类型: ${options.type}`
+                  : `Unknown component type: ${options.type}`,
+            };
         }
         break;
       case 'vue':
@@ -243,11 +283,23 @@ export function generateComponent(
             files = generateVueComplex(options);
             break;
           default:
-            return { success: false, error: `未知的组件类型: ${options.type}` };
+            return {
+              success: false,
+              error:
+                locale === 'zh'
+                  ? `未知的组件类型: ${options.type}`
+                  : `Unknown component type: ${options.type}`,
+            };
         }
         break;
       default:
-        return { success: false, error: `未知的框架: ${options.framework}` };
+        return {
+          success: false,
+          error:
+            locale === 'zh'
+              ? `未知的框架: ${options.framework}`
+              : `Unknown framework: ${options.framework}`,
+        };
     }
 
     return { success: true, files };
