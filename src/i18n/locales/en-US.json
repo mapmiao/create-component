@@ -1,0 +1,64 @@
+{
+  "cli": {
+    "description": "Quickly create React / Vue components",
+    "created": "✔ Component created successfully",
+    "createdFiles": "Created:",
+    "componentName": "Component",
+    "framework": "Framework",
+    "language": "Language",
+    "style": "Style",
+    "type": "Type",
+    "executionError": "Error:"
+  },
+  "prompt": {
+    "selectLanguage": "Select language",
+    "selectFramework": "Select framework",
+    "selectStyle": "Select style preprocessor",
+    "selectType": "Select component type",
+    "styleDefaultNote": " (framework default)",
+    "choiceSimple": "Simple (simple)",
+    "choiceStyled": "Styled (styled)",
+    "choiceComplex": "Complex (complex)"
+  },
+  "type": {
+    "simple": "simple",
+    "styled": "styled",
+    "complex": "complex"
+  },
+  "usage": {
+    "title": "Usage:",
+    "description": "Args:",
+    "example": "Examples:",
+    "options": "Options:",
+    "missingArg": "❌ Error: missing required argument {{arg}}",
+    "needAnother": "A positional argument is still needed. Full usage:",
+    "targetDesc": "directory the component is created in (auto-created)",
+    "nameDesc": "component name, PascalCase, e.g. Icon / UserAvatar / DeviceStatus",
+    "example1": "scx ./src/components MyComponent --framework vue --style scss",
+    "example2": "scx ./src/components/Icon --type simple",
+    "missingRequired": "❌ Error: missing required arguments",
+    "fullUsage": "Usage:",
+    "targetDir": "<target-directory>  target directory",
+    "componentName": "<component-name>    component name (PascalCase), e.g. Icon",
+    "exampleShort": "scx ./src/components Icon",
+    "exampleFull": "scx ./src/components UserCard --framework vue --style scss"
+  },
+  "error": {
+    "componentExists": "Component \"{{name}}\" already exists at {{path}}",
+    "componentExistsHint": "Delete the existing component or use another name to continue.",
+    "invalidComponentName": "Component name must be PascalCase",
+    "pascalCaseExample": "Component name must be PascalCase. e.g.",
+    "pascalCaseExamples": "Icon, UserAvatar, DeviceStatus, LoginForm",
+    "emptyComponentName": "Component name cannot be empty",
+    "mustStartWithUppercase": "Component name must start with an uppercase letter",
+    "onlyAlphanumeric": "Component name can only contain letters and numbers"
+  },
+  "option": {
+    "ts": "use TypeScript",
+    "js": "use JavaScript",
+    "framework": "framework (react|vue)",
+    "style": "style (less|scss|sass)",
+    "typeDesc": "type (simple|styled|complex), default complex",
+    "help": "show help"
+  }
+}

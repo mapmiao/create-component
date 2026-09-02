@@ -1,0 +1,64 @@
+{
+  "cli": {
+    "description": "快速创建 React / Vue 组件",
+    "created": "✔ 创建组件成功",
+    "createdFiles": "已创建:",
+    "componentName": "组件名称",
+    "framework": "框架",
+    "language": "语言",
+    "style": "样式",
+    "type": "类型",
+    "executionError": "执行出错:"
+  },
+  "prompt": {
+    "selectLanguage": "选择语言",
+    "selectFramework": "选择框架",
+    "selectStyle": "选择样式预处理语言",
+    "selectType": "选择组件类型",
+    "styleDefaultNote": "（当前框架默认）",
+    "choiceSimple": "简单组件 (simple)",
+    "choiceStyled": "带样式组件 (styled)",
+    "choiceComplex": "复杂组件 (complex)"
+  },
+  "type": {
+    "simple": "简单组件",
+    "styled": "带样式组件",
+    "complex": "复杂组件"
+  },
+  "usage": {
+    "title": "用法：",
+    "description": "说明：",
+    "example": "示例：",
+    "options": "Options:",
+    "missingArg": "❌ 错误：缺少必填参数 {{arg}}",
+    "needAnother": "还需要再给一个位置参数，完整命令是：",
+    "targetDesc": "组件要创建到的目标目录（可含多级路径，自动创建）",
+    "nameDesc": "组件名称，大驼峰命名，如 Icon / UserAvatar / DeviceStatus",
+    "example1": "scx ./src/components MyComponent --framework vue --style scss",
+    "example2": "scx ./src/components/Icon --type simple",
+    "missingRequired": "❌ 错误：缺少必填参数",
+    "fullUsage": "用法：",
+    "targetDir": "<target-directory>  组件要创建到的目标目录",
+    "componentName": "<component-name>    组件名称，大驼峰命名，如 Icon",
+    "exampleShort": "scx ./src/components Icon",
+    "exampleFull": "scx ./src/components UserCard --framework vue --style scss"
+  },
+  "error": {
+    "componentExists": "组件 \"{{name}}\" 已存在于 {{path}}",
+    "componentExistsHint": "如需重新生成，请先删除同名组件或换一个名称。",
+    "invalidComponentName": "组件名称必须使用大驼峰命名",
+    "pascalCaseExample": "组件名称必须使用大驼峰命名，例如:",
+    "pascalCaseExamples": "Icon, UserAvatar, DeviceStatus, LoginForm",
+    "emptyComponentName": "组件名称不能为空",
+    "mustStartWithUppercase": "组件名称必须以大写字母开头",
+    "onlyAlphanumeric": "组件名称只能包含字母和数字"
+  },
+  "option": {
+    "ts": "使用 TypeScript",
+    "js": "使用 JavaScript",
+    "framework": "框架 (react|vue)",
+    "style": "样式 (less|scss|sass)",
+    "typeDesc": "类型 (simple|styled|complex) 默认 complex",
+    "help": "查看帮助"
+  }
+}
