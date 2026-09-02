@@ -1,20 +1,25 @@
 {
-  "name": "create-react-component",
-  "version": "1.0.0",
-  "description": "A CLI tool for quickly creating React components",
+  "name": "create-component",
+  "version": "1.1.0",
+  "description": "A CLI tool for quickly creating React / Vue components with Less / SCSS styles",
   "bin": {
-    "cr": "./bin/cli.js"
+    "cc": "./bin/cli.js"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "prepare": "npm run build"
   },
   "keywords": [
     "react",
+    "vue",
     "component",
     "cli",
-    "generator"
+    "generator",
+    "scaffold"
   ],
   "author": "",
   "license": "MIT",

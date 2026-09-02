@@ -1,48 +1,57 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { CreateComponentOptions, Language } from './types';
-import { createSimpleTemplate } from './templates/simple';
 import {
-  createStyledTemplate,
-  createLessTemplate,
-} from './templates/styled';
+  CreateComponentOptions,
+  styleExt,
+} from './types';
+// React templates
 import {
-  createComplexIndexTemplate,
-  createComplexComponentTemplate,
-  createComplexHookTemplate,
-  createComplexUtilsTemplate,
-} from './templates/complex';
+  createReactSimpleTemplate,
+  createReactStyledTemplate,
+  createReactStyleTemplate,
+} from './templates/react/simple_styled';
+import {
+  createReactComplexIndexTemplate,
+  createReactComplexComponentTemplate,
+  createReactComplexHookTemplate,
+  createReactComplexUtilsTemplate,
+} from './templates/react/complex';
+// Vue templates
+import { createVueSimpleTemplate } from './templates/vue/simple';
+import {
+  createVueStyledTemplate,
+  createVueStyleTemplate,
+} from './templates/vue/styled';
+import {
+  createVueComplexComponentTemplate,
+  createVueComplexIndexTemplate,
+  createVueComposableTemplate,
+} from './templates/vue/complex';
+import { createVueUtilsTemplate } from './templates/vue/utils';
 
-/**
- * 确保目录存在，不存在则递归创建
- */
 function ensureDir(dir: string): void {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }
 }
 
-/**
- * 写入文件
- */
 function writeFile(filePath: string, content: string): void {
   const dir = path.dirname(filePath);
   ensureDir(dir);
   fs.writeFileSync(filePath, content, 'utf-8');
 }
 
-/**
- * 检查组件是否已存在
- */
 function checkComponentExists(options: CreateComponentOptions): boolean {
   const basePath = path.resolve(options.targetDirectory);
 
+  // simple：单个文件
   if (options.type === 'simple') {
+    if (options.framework === 'vue') {
+      const filePath = path.join(basePath, `${options.componentName}.vue`);
+      return fs.existsSync(filePath);
+    }
     const extension = options.language === 'ts' ? 'tsx' : 'js';
-    const filePath = path.join(
-      basePath,
-      `${options.componentName}.${extension}`,
-    );
+    const filePath = path.join(basePath, `${options.componentName}.${extension}`);
     return fs.existsSync(filePath);
   }
 
@@ -51,126 +60,153 @@ function checkComponentExists(options: CreateComponentOptions): boolean {
   return fs.existsSync(componentDir);
 }
 
-/**
- * 生成简单组件
- */
-function generateSimple(options: CreateComponentOptions): string[] {
-  const extension = options.language === 'ts' ? 'tsx' : 'js';
+/* ---------------------- React 生成 ---------------------- */
+
+function generateReactSimple(options: CreateComponentOptions): string[] {
+  const ext = options.language === 'ts' ? 'tsx' : 'js';
   const basePath = path.resolve(options.targetDirectory);
-  const filePath = path.join(basePath, `${options.componentName}.${extension}`);
-
-  const content = createSimpleTemplate(options.componentName, options.language);
+  const filePath = path.join(basePath, `${options.componentName}.${ext}`);
+  const content = createReactSimpleTemplate(options.componentName, options.language);
   writeFile(filePath, content);
-
   return [filePath];
 }
 
-/**
- * 生成带样式组件
- */
-function generateStyled(options: CreateComponentOptions): string[] {
+function generateReactStyled(options: CreateComponentOptions): string[] {
   const basePath = path.resolve(options.targetDirectory);
   const componentDir = path.join(basePath, options.componentName);
-  const extension = options.language === 'ts' ? 'tsx' : 'js';
-
+  const ext = options.language === 'ts' ? 'tsx' : 'js';
   ensureDir(componentDir);
 
   const files: string[] = [];
 
-  // 生成主文件
-  const indexFile = path.join(componentDir, `index.${extension}`);
-  const indexContent = createStyledTemplate(
-    options.componentName,
-    options.language,
-  );
-  writeFile(indexFile, indexContent);
+  const indexFile = path.join(componentDir, `index.${ext}`);
+  writeFile(indexFile, createReactStyledTemplate(options.componentName, options.language, options.style));
   files.push(indexFile);
 
-  // 生成样式文件
-  const lessFile = path.join(componentDir, 'index.module.less');
-  const lessContent = createLessTemplate(options.componentName);
-  writeFile(lessFile, lessContent);
-  files.push(lessFile);
+  const styleName = `index.module.${options.style === 'less' ? 'less' : options.style}`;
+  const styleFile = path.join(componentDir, styleName);
+  writeFile(styleFile, createReactStyleTemplate(options.componentName, options.style));
+  files.push(styleFile);
 
   return files;
 }
 
-/**
- * 生成复杂组件
- */
-function generateComplex(options: CreateComponentOptions): string[] {
+function generateReactComplex(options: CreateComponentOptions): string[] {
   const basePath = path.resolve(options.targetDirectory);
   const componentDir = path.join(basePath, options.componentName);
-  const extension = options.language === 'ts' ? 'tsx' : 'js';
-
+  const langExt = options.language === 'ts' ? 'tsx' : 'js';
+  const plainExt = options.language === 'ts' ? 'ts' : 'js';
   ensureDir(componentDir);
 
   const files: string[] = [];
 
-  // 生成 index 入口文件
-  const indexFile = path.join(componentDir, `index.${extension === 'tsx' ? 'ts' : 'js'}`);
-  const indexContent = createComplexIndexTemplate(
-    options.componentName,
-    options.language,
-  );
-  writeFile(indexFile, indexContent);
+  const indexFile = path.join(componentDir, `index.${plainExt}`);
+  writeFile(indexFile, createReactComplexIndexTemplate(options.componentName, options.language));
   files.push(indexFile);
 
-  // 生成主组件文件
-  const componentFile = path.join(componentDir, `${options.componentName}.${extension}`);
-  const componentContent = createComplexComponentTemplate(
-    options.componentName,
-    options.language,
-  );
-  writeFile(componentFile, componentContent);
+  const componentFile = path.join(componentDir, `${options.componentName}.${langExt}`);
+  writeFile(componentFile, createReactComplexComponentTemplate(options.componentName, options.language, options.style));
   files.push(componentFile);
 
-  // 生成样式文件
-  const lessFile = path.join(componentDir, 'index.module.less');
-  const lessContent = createLessTemplate(options.componentName);
-  writeFile(lessFile, lessContent);
-  files.push(lessFile);
+  const styleName = `index.module.${options.style === 'less' ? 'less' : options.style}`;
+  const styleFile = path.join(componentDir, styleName);
+  writeFile(styleFile, createReactStyleTemplate(options.componentName, options.style));
+  files.push(styleFile);
 
-  // 生成 hook 目录和文件
   const hookDir = path.join(componentDir, 'hook');
   ensureDir(hookDir);
-  const hookFile = path.join(
-    hookDir,
-    `use${options.componentName}.${extension === 'tsx' ? 'ts' : 'js'}`,
-  );
-  const hookContent = createComplexHookTemplate(
-    options.componentName,
-    options.language,
-  );
-  writeFile(hookFile, hookContent);
+  const hookFile = path.join(hookDir, `use${options.componentName}.${plainExt}`);
+  writeFile(hookFile, createReactComplexHookTemplate(options.componentName, options.language));
   files.push(hookFile);
 
-  // 生成 utils 目录和文件
   const utilsDir = path.join(componentDir, 'utils');
   ensureDir(utilsDir);
-  const utilsFile = path.join(
-    utilsDir,
-    `index.${extension === 'tsx' ? 'ts' : 'js'}`,
-  );
-  const utilsContent = createComplexUtilsTemplate(options.language);
-  writeFile(utilsFile, utilsContent);
+  const utilsFile = path.join(utilsDir, `index.${plainExt}`);
+  writeFile(utilsFile, createReactComplexUtilsTemplate(options.componentName, options.language));
   files.push(utilsFile);
 
   return files;
 }
 
-/**
- * 生成组件主函数
- */
+/* ---------------------- Vue 生成 ---------------------- */
+
+function generateVueSimple(options: CreateComponentOptions): string[] {
+  const basePath = path.resolve(options.targetDirectory);
+  const filePath = path.join(basePath, `${options.componentName}.vue`);
+  const styleLang = styleExt(options.style);
+  writeFile(filePath, createVueSimpleTemplate(options.componentName, options.language, styleLang));
+  return [filePath];
+}
+
+function generateVueStyled(options: CreateComponentOptions): string[] {
+  const basePath = path.resolve(options.targetDirectory);
+  const componentDir = path.join(basePath, options.componentName);
+  ensureDir(componentDir);
+  const styleLang = styleExt(options.style);
+
+  const files: string[] = [];
+
+  const vueFile = path.join(componentDir, 'index.vue');
+  writeFile(vueFile, createVueStyledTemplate(options.componentName, options.language, styleLang));
+  files.push(vueFile);
+
+  const styleFile = path.join(componentDir, `index.${styleLang}`);
+  writeFile(styleFile, createVueStyleTemplate(options.componentName, styleLang));
+  files.push(styleFile);
+
+  return files;
+}
+
+function generateVueComplex(options: CreateComponentOptions): string[] {
+  const basePath = path.resolve(options.targetDirectory);
+  const componentDir = path.join(basePath, options.componentName);
+  const plainExt = options.language === 'ts' ? 'ts' : 'js';
+  const styleLang = styleExt(options.style);
+  ensureDir(componentDir);
+
+  const files: string[] = [];
+
+  // 主 SFC（{Name}.vue）
+  const vueFile = path.join(componentDir, `${options.componentName}.vue`);
+  writeFile(vueFile, createVueComplexComponentTemplate(options.componentName, options.language, options.style));
+  files.push(vueFile);
+
+  // 入口（index.ts/index.js）
+  const indexFile = path.join(componentDir, `index.${plainExt}`);
+  writeFile(indexFile, createVueComplexIndexTemplate(options.componentName));
+  files.push(indexFile);
+
+  // 样式（index.scss / index.less）
+  const styleFile = path.join(componentDir, `index.${styleLang}`);
+  writeFile(styleFile, createVueStyleTemplate(options.componentName, styleLang));
+  files.push(styleFile);
+
+  // composable（vue 惯例，对应 react 的 hook）
+  const compDir = path.join(componentDir, 'composable');
+  ensureDir(compDir);
+  const compFile = path.join(compDir, `use${options.componentName}.${plainExt}`);
+  writeFile(compFile, createVueComposableTemplate(options.componentName, options.language));
+  files.push(compFile);
+
+  // utils
+  const utilsDir = path.join(componentDir, 'utils');
+  ensureDir(utilsDir);
+  const utilsFile = path.join(utilsDir, `index.${plainExt}`);
+  writeFile(utilsFile, createVueUtilsTemplate(options.language));
+  files.push(utilsFile);
+
+  return files;
+}
+
+/* ---------------------- 主入口 ---------------------- */
+
 export function generateComponent(
   options: CreateComponentOptions,
 ): { success: boolean; files?: string[]; error?: string } {
   try {
-    // 确保目标目录存在
     const basePath = path.resolve(options.targetDirectory);
     ensureDir(basePath);
 
-    // 检查组件是否已存在
     if (checkComponentExists(options)) {
       return {
         success: false,
@@ -178,31 +214,44 @@ export function generateComponent(
       };
     }
 
-    // 根据类型生成组件
     let files: string[];
-    switch (options.type) {
-      case 'simple':
-        files = generateSimple(options);
+    switch (options.framework) {
+      case 'react':
+        switch (options.type) {
+          case 'simple':
+            files = generateReactSimple(options);
+            break;
+          case 'styled':
+            files = generateReactStyled(options);
+            break;
+          case 'complex':
+            files = generateReactComplex(options);
+            break;
+          default:
+            return { success: false, error: `未知的组件类型: ${options.type}` };
+        }
         break;
-      case 'styled':
-        files = generateStyled(options);
-        break;
-      case 'complex':
-        files = generateComplex(options);
+      case 'vue':
+        switch (options.type) {
+          case 'simple':
+            files = generateVueSimple(options);
+            break;
+          case 'styled':
+            files = generateVueStyled(options);
+            break;
+          case 'complex':
+            files = generateVueComplex(options);
+            break;
+          default:
+            return { success: false, error: `未知的组件类型: ${options.type}` };
+        }
         break;
       default:
-        return {
-          success: false,
-          error: `未知的组件类型: ${options.type}`,
-        };
+        return { success: false, error: `未知的框架: ${options.framework}` };
     }
 
     return { success: true, files };
   } catch (err) {
-    const error = err as Error;
-    return {
-      success: false,
-      error: error.message,
-    };
+    return { success: false, error: (err as Error).message };
   }
 }
